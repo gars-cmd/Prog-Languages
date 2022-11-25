@@ -31,18 +31,19 @@
         ;in case of empty list we return - infinity
   (cond [(null? lst) -inf.0]
         ;if the list is of size one then we return the only element 
-        [(= 1 (length lst)) (first lst)]
+        [(= 1 (length lst)) (+ 0.0 (first lst))]
         ;we return the minimum of the recursive call of the first element and the rest of the list
         [else (+ 0.0 (min (first lst) (min-help(rest lst))) ) ] 
        )
   )
+
 ;;;;;;;;;;;;;;;;;;;;;
 ;; Test of min-help
 ;;;;;;;;;;;;;;;;;;;;;
 
 (test (min-help '(1 2 3 4)) => 1.0)
 (test (min-help '(-1 2 3 4)) => -1.0)
-(test (min-help '(-1)) => -1)
+(test (min-help '(-1)) => -1.0)
 (test (min-help '(-4 -4 -4)) => -4.0)
 (test (min-help '()) => -inf.0)
 
@@ -53,7 +54,7 @@
         ;in case of empty list we return + infinity
   (cond [(null? lst) +inf.0]
         ;if the list is of size one then we return the only element 
-        [(= 1 (length lst)) (first lst)]
+        [(= 1 (length lst)) (+ 0.0 (first lst))]
         ;we return the minimum of the recursive call of the first element and the rest of the list
         [else (+ 0.0 (max (first lst) (max-help(rest lst))) ) ] 
        )
@@ -66,7 +67,7 @@
 (test (max-help '(1 2 3 4)) => 4.0)
 (test (max-help '(-4 2 3 4)) => 4.0)
 (test (max-help '(-4 -4 -4)) => -4.0)
-(test (max-help '(-1)) => -1)
+(test (max-help '(-1)) => -1.0)
 (test (max-help '()) => +inf.0)
 
 ;The main min&max function
@@ -75,9 +76,18 @@
         ;In case of empty list the return the lists -inf ; +inf 
   (cond [(null? lst) '(-inf.0 +inf.0)]
         ; return a list of the minimum of the flattened list and the maximum of the flattened list 
-        [else (list (min-help(open-list lst)) (max-help(open-list lst)) ) ]
+        [else (list
+                (min-help(open-list lst))
+                (max-help(open-list lst))
+               ) ]
   )
  )
+
+#|
+I had difficuties to handle the use of brackets ,
+to handle the cast of int to floar and reverse . 
+|#
+
 
 ;;;;;;;;;;;;;;;;;;;;;
 ;; Test of 1.b
@@ -87,6 +97,8 @@
 (test (min&max '((1) (3) () (5))) => '(1.0 5.0))
 (test (min&max '(() () ())) => '(-inf.0 +inf.0))
 (test (min&max '( (1 1) (-1 -1) (-4 5) (-5 -5) ())) => '(-5.0 5.0))
+(test (min&max '( (3) () )) => '(3.0 3.0))
+
 
 
 
@@ -167,6 +179,13 @@
     )
   )
 
+
+#|
+Difficuties to know how to use the Add method and to understand that it can be used 
+as kind of object that we link to represent the table 
+|#
+
+
 ;;;;;;;;;;;;;;;;;;;;;
 ;; Test of 2.3
 ;;;;;;;;;;;;;;;;;;;;;
@@ -183,15 +202,20 @@
 (: remove-item : Table Symbol ->  Table )
 (define (remove-item table input)
   (cases table
+    ;if the table is an empty table the return also an empty table 
     [(EmptyTbl) (EmptyTbl)]
+    ; if we get an Add component 
     [(Add key val table)
+     ; we check if the content of the Add component is what we are looking for
+     ; if it's the case we return the table without the component we found 
      (cond [(eq? key input) table]
+           ;else we linked the element and call the recursion on the table 
            [else (Add key val (remove-item table input))]
       )
      ]
     )
   )
-       
+
 ;;;;;;;;;;;;;;;;;;;;;
 ;; Test of 2.4
 ;;;;;;;;;;;;;;;;;;;;;
